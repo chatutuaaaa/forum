@@ -1,0 +1,25 @@
+{% extends 'core/base.html' %}
+
+{% block title %}登录 - 树欲静而风不止{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+    <section class="card auth-card">
+        <h2 class="card-title">登录</h2>
+        <form method="post">
+            {% csrf_token %}
+            <label>用户名
+                <input type="text" name="username" required>
+            </label>
+            <label>密码
+                <input type="password" name="password" required>
+            </label>
+            <button type="submit" class="btn primary full">登录</button>
+        </form>
+        <p class="muted">
+            还没有账号？ <a href="{% url 'register' %}">去注册</a>
+        </p>
+    </section>
+</div>
+{% endblock %}
+

@@ -1,0 +1,20 @@
+{% extends 'core/base.html' %}
+
+{% block title %}注册 - 树欲静而风不止{% endblock %}
+
+{% block content %}
+<div class="auth-layout">
+    <section class="card auth-card">
+        <h2 class="card-title">注册</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn primary full">注册</button>
+        </form>
+        <p class="muted">
+            已有账号？ <a href="{% url 'login' %}">去登录</a>
+        </p>
+    </section>
+</div>
+{% endblock %}
+

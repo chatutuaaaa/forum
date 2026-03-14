@@ -1,0 +1,80 @@
+{% extends 'core/base.html' %}
+
+{% block title %}{{ post.title }} - 树欲静而风不止{% endblock %}
+
+{% block content %}
+<div class="detail-layout">
+    <section class="column center">
+        <article class="card">
+            <h1 class="post-title">{{ post.title }}</h1>
+            <p class="meta">
+                {{ post.author.username }} · {{ post.created_at|date:"Y-m-d H:i" }}
+                {% if post.category %} · {{ post.category.name }}{% endif %}
+            </p>
+            <div class="post-actions">
+                {% if user.is_authenticated %}
+                    <form action="{% url 'like_post' post.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn small {% if is_liked %}primary{% endif %}">
+                            👍 {% if is_liked %}已点赞{% else %}点赞{% endif %} · {{ post.likes.count }}
+                        </button>
+                    </form>
+                {% else %}
+                    <span class="muted">登录后可以点赞和评论</span>
+                {% endif %}
+            </div>
+            <div class="post-content markdown-body">
+                {{ rendered_content|safe }}
+            </div>
+        </article>
+
+        <section class="card">
+            <h3 class="card-title">评论 ({{ comments|length }})</h3>
+            {% if user.is_authenticated %}
+                <form action="" method="post" class="comment-form">
+                    {% csrf_token %}
+                    {{ comment_form.as_p }}
+                    <button type="submit" class="btn primary">发表评论</button>
+                </form>
+            {% else %}
+                <p class="muted">请先 <a href="{% url 'login' %}">登录</a> 后再评论。</p>
+            {% endif %}
+
+            <div class="comment-list">
+                {% for comment in comments %}
+                    <div class="comment-item">
+                        <p class="meta">
+                            {{ comment.user.username }} · {{ comment.created_at|date:"Y-m-d H:i" }}
+                        </p>
+                        <p>{{ comment.content }}</p>
+                        {% if user.is_authenticated %}
+                            <details class="reply-box">
+                                <summary>回复</summary>
+                                <form action="" method="post">
+                                    {% csrf_token %}
+                                    <textarea name="content" rows="2" required></textarea>
+                                    <input type="hidden" name="parent_id" value="{{ comment.id }}">
+                                    <button type="submit" class="btn small">提交回复</button>
+                                </form>
+                            </details>
+                        {% endif %}
+                        {% for reply in comment.replies.all %}
+                            {% if not reply.is_deleted %}
+                                <div class="comment-reply">
+                                    <p class="meta">
+                                        {{ reply.user.username }} · {{ reply.created_at|date:"Y-m-d H:i" }}
+                                    </p>
+                                    <p>{{ reply.content }}</p>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% empty %}
+                    <p class="muted">还没有评论，快来抢沙发吧～</p>
+                {% endfor %}
+            </div>
+        </section>
+    </section>
+</div>
+{% endblock %}
+

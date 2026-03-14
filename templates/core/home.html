@@ -1,0 +1,110 @@
+{% extends 'core/base.html' %}
+
+{% block title %}首页 - 树欲静而风不止{% endblock %}
+
+{% block content %}
+<div class="home-layout">
+    <aside class="column left">
+        <section class="card">
+            <h3 class="card-title">分类</h3>
+            <ul class="category-list">
+                <li class="{% if not current_category %}active{% endif %}">
+                    <a href="{% url 'home' %}">全部</a>
+                </li>
+                {% for cat in categories %}
+                    <li class="{% if current_category == cat.slug %}active{% endif %}">
+                        <a href="{% url 'home' %}?category={{ cat.slug }}">{{ cat.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </section>
+
+        <section class="card">
+            <h3 class="card-title">热门标签</h3>
+            <div class="tag-cloud">
+                {% for tag in tags %}
+                    <a href="{% url 'home' %}?tag={{ tag.slug }}" class="tag">{{ tag.name }}</a>
+                {% empty %}
+                    <p class="muted">暂无标签</p>
+                {% endfor %}
+            </div>
+        </section>
+    </aside>
+
+    <section class="column center">
+        {% if posts %}
+            {% with first=posts|first %}
+                <article class="card hero-card">
+                    <div class="hero-image"></div>
+                    <div class="hero-body">
+                        <h2><a href="{% url 'post_detail' first.pk %}">{{ first.title }}</a></h2>
+                        <p class="meta">
+                            {{ first.author.username }} · {{ first.created_at|date:"Y-m-d H:i" }}
+                        </p>
+                        <p class="excerpt">
+                            {{ first.content|striptags|truncatechars:120 }}
+                        </p>
+                    </div>
+                </article>
+            {% endwith %}
+        {% endif %}
+
+        <div class="post-list">
+            {% for post in posts %}
+                <article class="card post-card">
+                    <h3 class="post-title">
+                        <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+                    </h3>
+                    <p class="meta">
+                        {{ post.author.username }} · {{ post.created_at|date:"Y-m-d H:i" }}
+                        {% if post.category %} · {{ post.category.name }}{% endif %}
+                    </p>
+                    <p class="excerpt">
+                        {{ post.content|striptags|truncatechars:140 }}
+                    </p>
+                    <div class="post-footer">
+                        <span>👁 {{ post.views }}</span>
+                        <span>💬 {{ post.num_comments }}</span>
+                        <span>👍 {{ post.num_likes }}</span>
+                    </div>
+                </article>
+            {% empty %}
+                <p class="muted">暂无内容，快去发第一篇帖子吧～</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <aside class="column right">
+        <section class="card">
+            <h3 class="card-title">推荐榜</h3>
+            <ol class="hot-list">
+                {% for item in hot_posts %}
+                    <li>
+                        <a href="{% url 'post_detail' item.pk %}">{{ item.title|truncatechars:20 }}</a>
+                    </li>
+                {% empty %}
+                    <li class="muted">暂无推荐</li>
+                {% endfor %}
+            </ol>
+        </section>
+
+        <section class="card">
+            <h3 class="card-title">每日一言</h3>
+            {% if daily_quote %}
+                <p>{{ daily_quote.text }}</p>
+                {% if daily_quote.author %}
+                    <p class="muted">—— {{ daily_quote.author }}</p>
+                {% endif %}
+            {% else %}
+                <p class="muted">今天也要元气满满呀～</p>
+            {% endif %}
+        </section>
+
+        <section class="card">
+            <h3 class="card-title">天气</h3>
+            <p class="muted">这里可以接入天气 API，目前为占位模块。</p>
+        </section>
+    </aside>
+</div>
+{% endblock %}
+

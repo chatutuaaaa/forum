@@ -1,0 +1,42 @@
+{% extends 'core/base.html' %}
+
+{% block title %}发帖中心 - 树欲静而风不止{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+    <section class="column left card">
+        <h3 class="card-title">快速发帖</h3>
+        <form method="post" enctype="multipart/form-data" id="post-form">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn primary full">发布</button>
+        </form>
+        <p class="muted small">正文支持 Markdown 语法。</p>
+    </section>
+    <section class="column center card">
+        <h3 class="card-title">我发布的帖子</h3>
+        <ul class="post-manage-list">
+            {% for post in posts %}
+                <li>
+                    <a href="{% url 'post_detail' post.pk %}">{{ post.title }}</a>
+                    <span class="muted">{{ post.created_at|date:"Y-m-d H:i" }}</span>
+                </li>
+            {% empty %}
+                <li class="muted">你还没有发布任何帖子。</li>
+            {% endfor %}
+        </ul>
+    </section>
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
+<script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
+<script>
+    (function () {
+        const textarea = document.querySelector('#id_content');
+        if (textarea) {
+            new SimpleMDE({element: textarea});
+        }
+    })();
+</script>
+{% endblock %}
+
