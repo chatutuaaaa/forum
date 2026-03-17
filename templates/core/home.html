@@ -1,7 +1,7 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
-{% block title %}首页 - 树欲静而风不止{% endblock %}
+{% block title %}首页 - 茶某人的论坛{% endblock %}
 
 {% block content %}
 <div class="home-layout">
@@ -114,7 +114,7 @@
                     </div>
 
                     <div class="weather-sub">
-                        <span class="weather-pin" aria-hidden="true"></span>
+                        <img src="{% static 'img/location.svg' %}" class="weather-pin-icon" alt="定位">
                         <span class="weather-loc">{{ weather_location|default:live_weather.city }}</span>
                         <span class="weather-time">{{ weather_date|default:live_weather.reporttime }}</span>
                     </div>

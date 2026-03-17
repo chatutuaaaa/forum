@@ -336,26 +336,10 @@ textarea {
     overflow: hidden;
 }
 
-.weather-pin {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    border-radius: 6px;
-    background: rgba(255, 255, 255, 0.55);
-    position: relative;
+.weather-pin-icon {
+    width: 14px;
+    height: 14px;
     flex: 0 0 auto;
-}
-
-.weather-pin::before {
-    content: "";
-    position: absolute;
-    left: 6px;
-    top: 3px;
-    width: 4px;
-    height: 4px;
-    border-radius: 999px;
-    background: rgba(30, 143, 255, 0.95);
-    box-shadow: 0 0 0 2px rgba(30, 143, 255, 0.10);
 }
 
 .weather-loc {
