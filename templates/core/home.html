@@ -102,7 +102,41 @@
 
         <section class="card">
             <h3 class="card-title">天气</h3>
-            <p class="muted">这里可以接入天气 API，目前为占位模块。</p>
+            {% if live_weather %}
+                <div class="weather-widget">
+                    <div class="weather-top">
+                        <div class="weather-title">
+                            <span class="weather-icon" aria-hidden="true">⛅</span>
+                            <span>天气</span>
+                        </div>
+                    </div>
+
+                    <div class="weather-sub">
+                        <span class="weather-pin" aria-hidden="true">📍</span>
+                        <span class="weather-loc">{{ live_weather.city }}</span>
+                        <span class="weather-time">{{ live_weather.reporttime }}</span>
+                    </div>
+
+                    <div class="weather-main">
+                        <div class="weather-temp">
+                            <span class="weather-temp-value">{{ live_weather.temperature_c }}</span><span class="weather-temp-unit">°C</span>
+                        </div>
+                        <div class="weather-right">
+                            <div class="weather-desc">{{ live_weather.weather }}</div>
+                            <div class="weather-kv">
+                                <span class="weather-k">体感</span>
+                                <span class="weather-v">{{ live_weather.temperature_c }}°C</span>
+                            </div>
+                            <div class="weather-kv">
+                                <span class="weather-k">湿度</span>
+                                <span class="weather-v">{{ live_weather.humidity }}%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="muted">天气数据暂不可用</p>
+            {% endif %}
         </section>
     </aside>
 </div>

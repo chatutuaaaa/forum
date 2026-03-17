@@ -144,3 +144,14 @@ MEDIA_ROOT = BASE_DIR / 'media'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+# AMap (Gaode) Web Service
+AMAP_KEY = os.getenv('AMAP_KEY', '')
+AMAP_DEFAULT_ADCODE = os.getenv('AMAP_DEFAULT_ADCODE', '110000')
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+        "LOCATION": "forumsite",
+    }
+}

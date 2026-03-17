@@ -10,6 +10,7 @@ from markdown import markdown
 
 from .forms import CommentForm, PostForm, RegisterForm
 from .models import Category, Comment, DailyQuote, Post, PostLike, Tag
+from .services.amap_weather import get_live_weather, resolve_adcode_for_request
 
 
 def home(request: HttpRequest) -> HttpResponse:
@@ -34,6 +35,8 @@ def home(request: HttpRequest) -> HttpResponse:
         hot_score=Count('likes') + Count('comments')
     ).order_by('-hot_score', '-created_at')[:10]
     daily_quote = DailyQuote.objects.filter(is_active=True).first()
+    adcode = resolve_adcode_for_request(request)
+    live_weather = get_live_weather(adcode)
 
     context = {
         'posts': posts,
@@ -41,6 +44,7 @@ def home(request: HttpRequest) -> HttpResponse:
         'tags': tags,
         'hot_posts': hot_posts,
         'daily_quote': daily_quote,
+        'live_weather': live_weather,
         'current_category': category_slug,
         'current_tag': tag_slug,
         'query': query,
