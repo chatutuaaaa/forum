@@ -8,6 +8,8 @@ from django.urls import reverse
 
 from markdown import markdown
 
+from datetime import datetime
+
 from .forms import CommentForm, PostForm, RegisterForm
 from .models import Category, Comment, DailyQuote, Post, PostLike, Tag
 from .services.amap_weather import get_live_weather, resolve_adcode_for_request
@@ -37,6 +39,52 @@ def home(request: HttpRequest) -> HttpResponse:
     daily_quote = DailyQuote.objects.filter(is_active=True).first()
     adcode = resolve_adcode_for_request(request)
     live_weather = get_live_weather(adcode)
+    weather_location = None
+    weather_date = None
+    weather_icon = "img/weather/cloudy.svg"
+    if live_weather:
+        weather_location = " ".join([p for p in [live_weather.province, live_weather.city] if p]).strip() or None
+        try:
+            dt = datetime.strptime(live_weather.reporttime, "%Y-%m-%d %H:%M:%S")
+            week_map = ["一", "二", "三", "四", "五", "六", "日"]
+            weather_date = f"{dt.strftime('%Y年%m月%d日')} 周{week_map[dt.weekday()]}"
+        except Exception:
+            weather_date = live_weather.reporttime
+
+        desc = (live_weather.weather or "").strip()
+        hour = None
+        try:
+            if 'dt' in locals():
+                hour = dt.hour
+        except Exception:
+            hour = None
+        is_night = hour is not None and (hour >= 18 or hour < 6)
+
+        def pick(icon: str) -> str:
+            return f"img/weather/{icon}"
+
+        if any(k in desc for k in ["雷", "雷阵雨", "雷暴"]):
+            weather_icon = pick("thunderstorm.svg")
+        elif any(k in desc for k in ["暴雨", "大雨", "特大暴雨"]):
+            weather_icon = pick("heavy-rain.svg")
+        elif "雨" in desc:
+            weather_icon = pick("light-rain.svg")
+        elif any(k in desc for k in ["雪", "雨夹雪"]):
+            weather_icon = pick("snow.svg")
+        elif any(k in desc for k in ["沙", "尘", "沙尘暴"]):
+            weather_icon = pick("sandstorm.svg")
+        elif any(k in desc for k in ["雾", "霾"]):
+            weather_icon = pick("fog.svg")
+        elif any(k in desc for k in ["大风", "狂风"]):
+            weather_icon = pick("heavy-wind.svg")
+        elif "风" in desc:
+            weather_icon = pick("wind.svg")
+        elif any(k in desc for k in ["多云", "阴"]):
+            weather_icon = pick("cloudy-night.svg" if is_night else "cloudy.svg")
+        elif "晴" in desc:
+            weather_icon = pick("moon.svg" if is_night else "sunny.svg")
+        else:
+            weather_icon = pick("cloudy.svg")
 
     context = {
         'posts': posts,
@@ -45,6 +93,9 @@ def home(request: HttpRequest) -> HttpResponse:
         'hot_posts': hot_posts,
         'daily_quote': daily_quote,
         'live_weather': live_weather,
+        'weather_location': weather_location,
+        'weather_date': weather_date,
+        'weather_icon': weather_icon,
         'current_category': category_slug,
         'current_tag': tag_slug,
         'query': query,

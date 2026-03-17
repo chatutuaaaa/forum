@@ -1,4 +1,5 @@
 {% extends 'core/base.html' %}
+{% load static %}
 
 {% block title %}首页 - 树欲静而风不止{% endblock %}
 
@@ -100,21 +101,22 @@
             {% endif %}
         </section>
 
-        <section class="card">
-            <h3 class="card-title">天气</h3>
+        <section class="card weather-card">
             {% if live_weather %}
                 <div class="weather-widget">
                     <div class="weather-top">
                         <div class="weather-title">
-                            <span class="weather-icon" aria-hidden="true">⛅</span>
+                            <span class="weather-icon" aria-hidden="true">
+                                <img src="{% static weather_icon %}" alt="">
+                            </span>
                             <span>天气</span>
                         </div>
                     </div>
 
                     <div class="weather-sub">
-                        <span class="weather-pin" aria-hidden="true">📍</span>
-                        <span class="weather-loc">{{ live_weather.city }}</span>
-                        <span class="weather-time">{{ live_weather.reporttime }}</span>
+                        <span class="weather-pin" aria-hidden="true"></span>
+                        <span class="weather-loc">{{ weather_location|default:live_weather.city }}</span>
+                        <span class="weather-time">{{ weather_date|default:live_weather.reporttime }}</span>
                     </div>
 
                     <div class="weather-main">
