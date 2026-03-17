@@ -450,3 +450,136 @@ textarea {
     }
 }
 
+/* 密码修改页面样式 */
+.password-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    padding-bottom: 0.5rem;
+}
+
+.password-tabs .tab {
+    padding: 0.4rem 0.8rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    color: #666;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.password-tabs .tab:hover {
+    background: rgba(34, 139, 230, 0.1);
+    text-decoration: none;
+}
+
+.password-tabs .tab.active {
+    background: #228be6;
+    color: white;
+}
+
+.hint {
+    font-size: 0.85rem;
+    color: #718096;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+}
+
+.field-error {
+    display: block;
+    color: #e03131;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.errors {
+    background: #fff5f5;
+    border-radius: 10px;
+    padding: 0.5rem 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.errors .error {
+    color: #e03131;
+    font-size: 0.85rem;
+    margin: 0;
+}
+
+.divider {
+    color: #dee2e6;
+    margin: 0 0.5rem;
+}
+
+.auth-card input[type="text"],
+.auth-card input[type="password"],
+.auth-card input[type="email"],
+.auth-card input[type="number"] {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.6);
+    padding: 0.4rem 0.6rem;
+    margin-top: 0.2rem;
+}
+
+.auth-card input:focus {
+    outline: none;
+    border-color: #228be6;
+    box-shadow: 0 0 0 2px rgba(34, 139, 230, 0.2);
+}
+
+/* 用户菜单下拉 */
+.user-menu {
+    position: relative;
+    display: inline-block;
+}
+
+.user-name {
+    cursor: pointer;
+    font-size: 0.85rem;
+    color: #333;
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    transition: background 0.2s;
+}
+
+.user-name:hover {
+    background: rgba(0, 0, 0, 0.05);
+}
+
+.user-dropdown {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 120px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    z-index: 100;
+    overflow: hidden;
+    margin-top: 0.25rem;
+}
+
+.user-menu:hover .user-dropdown {
+    display: block;
+}
+
+.user-dropdown a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    color: #333;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+}
+
+.user-dropdown a:hover {
+    background: #f8f9fa;
+    text-decoration: none;
+}
+
+.user-dropdown a:not(:last-child) {
+    border-bottom: 1px solid #f1f3f5;
+}
+
+

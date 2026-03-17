@@ -1,8 +1,9 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.db.models import Count, Q
-from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 
@@ -10,7 +11,10 @@ from markdown import markdown
 
 from datetime import datetime
 
-from .forms import CommentForm, PostForm, RegisterForm
+from .forms import (
+    CommentForm, PostForm, RegisterForm,
+    PasswordChangeForm, EmailVerificationForm, VerifyCodeForm,
+)
 from .models import Category, Comment, DailyQuote, Post, PostLike, Tag
 from .services.amap_weather import get_live_weather, resolve_adcode_for_request
 
@@ -168,6 +172,9 @@ def user_login(request: HttpRequest) -> HttpResponse:
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
+            # 管理员跳转到后台管理界面
+            if user.is_staff or user.is_superuser:
+                return redirect('/admin/')
             return redirect('home')
         messages.error(request, '用户名或密码错误')
     return render(request, 'core/auth/login.html')
@@ -197,4 +204,71 @@ def dashboard(request: HttpRequest) -> HttpResponse:
         'form': form,
     }
     return render(request, 'core/dashboard.html', context)
+
+
+@login_required
+def password_change(request: HttpRequest) -> HttpResponse:
+    """密码修改 - 使用旧密码验证"""
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, '密码修改成功，请重新登录')
+            return redirect('login')
+    else:
+        form = PasswordChangeForm(request.user)
+    return render(request, 'core/auth/password_change.html', {'form': form})
+
+
+@login_required
+def password_reset_email(request: HttpRequest) -> HttpResponse:
+    """密码重置 - 发送邮箱验证码"""
+    # 检查用户是否有邮箱
+    if not request.user.email:
+        messages.error(request, '您尚未设置邮箱，无法使用邮箱验证')
+        return redirect('password_change')
+
+    if request.method == 'POST':
+        form = EmailVerificationForm(request.user, request.POST)
+        if form.is_valid():
+            email_sent = form.send_verification_code()
+            # 存储邮箱验证状态到session
+            request.session['password_reset_email_verified'] = True
+            if not email_sent:
+                # 开发环境：获取验证码供显示
+                dev_code = cache.get(f'password_reset_dev_{request.user.pk}')
+                if dev_code:
+                    messages.info(request, f'[开发模式] 验证码：{dev_code}')
+                else:
+                    messages.warning(request, '邮件发送失败，请检查邮箱配置')
+            else:
+                messages.success(request, f'验证码已发送至 {request.user.email}')
+            return redirect('password_reset_verify')
+    else:
+        form = EmailVerificationForm(request.user, initial={'email': request.user.email})
+    return render(request, 'core/auth/password_reset_email.html', {'form': form})
+
+
+@login_required
+def password_reset_verify(request: HttpRequest) -> HttpResponse:
+    """密码重置 - 验证码验证并修改密码"""
+    # 检查是否已验证邮箱
+    if not request.session.get('password_reset_email_verified'):
+        return redirect('password_reset_email')
+
+    if request.method == 'POST':
+        form = VerifyCodeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            # 清除session
+            request.session.pop('password_reset_email_verified', None)
+            messages.success(request, '密码修改成功，请重新登录')
+            return redirect('login')
+    else:
+        # 开发环境：获取验证码供显示
+        dev_code = cache.get(f'password_reset_dev_{request.user.pk}')
+        form = VerifyCodeForm(request.user)
+        if dev_code:
+            messages.info(request, f'[开发模式] 验证码：{dev_code}')
+    return render(request, 'core/auth/password_reset_verify.html', {'form': form})
 

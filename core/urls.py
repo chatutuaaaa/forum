@@ -9,5 +9,9 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('register/', views.register, name='register'),
     path('dashboard/', views.dashboard, name='dashboard'),
+    # 密码修改相关
+    path('password/change/', views.password_change, name='password_change'),
+    path('password/reset/email/', views.password_reset_email, name='password_reset_email'),
+    path('password/reset/verify/', views.password_reset_verify, name='password_reset_verify'),
 ]
 
