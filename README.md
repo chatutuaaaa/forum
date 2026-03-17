@@ -70,8 +70,30 @@ podman-compose up --build
 
 ```bash
 docker compose exec web python manage.py migrate
-docker compose exec web python manage.py createsuperuser
 ```
+
+> 项目已内置数据迁移，会自动创建默认管理员账户。
+
+### 默认管理员账户
+
+项目已内置默认管理员账户，迁移时会自动创建：
+
+| 字段 | 值 |
+|------|-----|
+| 用户名 | `admin` |
+| 密码 | `admin123` |
+| 邮箱 | `admin@forum.local` |
+
+**安全提示**：首次登录后请立即修改密码！
+
+### 密码修改功能
+
+支持两种密码修改方式：
+
+1. **旧密码验证**：输入旧密码和新密码直接修改
+2. **邮箱验证**：向绑定邮箱发送验证码，验证后修改（开发环境会在页面显示验证码）
+
+访问路径：登录后点击右上角用户名 → 修改密码
 
 ## 环境变量（PostgreSQL）
 
